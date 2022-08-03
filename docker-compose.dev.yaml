@@ -1,0 +1,27 @@
+
+version: "3.7"
+services:
+  # Контейнер с БД Postgres
+  content-dags-db:
+    container_name: pet_project_db
+    image: postgres:13.3
+    # Передача переменных окружения для инициализации контейнера
+    environment:
+      - POSTGRES_DB=pet_project_db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_PORT=5432
+    # Порты которые открываются из docker контейнера
+    # Это полезно, например, при локальном запуске тестов с подключением к базе в docker контейнере
+    ports:
+      - 32700:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+#      - ./sql/20220307010000_schema.sql:/docker-entrypoint-initdb.d/20220307010000_schema.sql
+#      - ./sql/20220307011000_data.sql:/docker-entrypoint-initdb.d/20220307011000_data.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      timeout: 15s
+      start_period: 60s
+      interval: 60s
+      retries: 25
